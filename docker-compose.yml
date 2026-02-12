@@ -1,37 +1,38 @@
 services:
   raylib-app:
-    build: .  # Points to the Dockerfile in the same folder
+    build: .
     image: raylib-dev
     container_name: raylib_developer
-    # Matches your host user so you own the files and have socket permissions
     user: "${UID}:${GID}"
     
     environment:
       - DISPLAY=${DISPLAY}
+      # WSLg uses WAYLAND_DISPLAY, Arch uses DISPLAY (XWayland)
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
       - XDG_RUNTIME_DIR=/tmp
-      # Ensures the app looks for the D-Bus socket where we mounted it
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${UID}/bus
-      # Optional: Force X11 if you still have Wayland detection issues
-      - WAYLAND_DISPLAY= 
+      # Needed for audio on both systems
+      - PULSE_SERVER=unix:/run/user/${UID}/pulse/native
 
     volumes:
-      # Current directory to /workspace
       - ./project:/workspace
-      # Graphics Sockets
+      # --- Graphics Sockets (Arch/Linux) ---
       - /tmp/.X11-unix:/tmp/.X11-unix
-      # D-Bus socket for KDE/Wayland stability
       - /run/user/${UID}/bus:/run/user/${UID}/bus
+      # --- WSLg Sockets (Windows) ---
+      # Docker will ignore these if they don't exist on Arch
+      - /mnt/wslg:/mnt/wslg
+      # --- System/Identity ---
       - /etc/passwd:/etc/passwd:ro
       - /etc/group:/etc/group:ro
       
     devices:
+      # Hardware acceleration for Arch (Windows handles this via /mnt/wslg)
       - /dev/dri:/dev/dri
       
-    # Security/Performance settings
     ipc: host
     network_mode: host
-    
     working_dir: /workspace
-    stdin_open: true # Equivalent to -i
-    tty: true        # Equivalent to -t
+    stdin_open: true
+    tty: true
     command: /bin/bash
