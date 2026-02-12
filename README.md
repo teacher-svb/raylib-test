@@ -16,6 +16,11 @@
     - [2. Configure the Docker Toolchain](#2-configure-the-docker-toolchain)
     - [3. CMake \& Environment](#3-cmake--environment)
     - [4. Running \& Debugging](#4-running--debugging)
+  - [🍎 \[DRAFT\] VS Code + Docker (macOS)](#-draft-vs-code--docker-macos)
+    - [1. Prerequisites](#1-prerequisites-3)
+    - [2. Networking Setup](#2-networking-setup)
+    - [3. Environment Configuration](#3-environment-configuration)
+    - [4. Known Troubleshooting Points](#4-known-troubleshooting-points)
 
 
 ## VS Code + Docker (Native Linux)
@@ -114,3 +119,37 @@ CLion will use the container's environment to compile and debug.
 * **Debug:** Click the **Green Bug** icon. You can set breakpoints and inspect variables natively in CLion.
 
 > **Troubleshooting:** If the window does not appear, ensure WSLg is updated by running `wsl --update` in a Windows PowerShell.
+
+
+## 🍎 [DRAFT] VS Code + Docker (macOS)
+
+**⚠️ DISCLAIMER:** This is an experimental guide. macOS does not support Linux GUI applications natively. This setup requires third-party software (XQuartz) to bridge the gap. Users should expect to troubleshoot display and networking issues.
+
+### 1. Prerequisites
+* **Docker Desktop:** Must be installed and running on your Mac.
+* **XQuartz:** 1. Install via Homebrew: `brew install --cask xquartz`.
+    2. Open XQuartz and go to **Settings > Security**.
+    3. **Check** the box: "Allow connections from network clients".
+    4. **Restart your Mac** to ensure settings take effect.
+
+### 2. Networking Setup
+Because Docker on Mac runs in a virtual machine, it cannot access the host's X11 socket directly. You must authorize your Mac's IP to XQuartz before every session.
+
+Run this in your Mac terminal:
+```bash
+# Get your local IP
+IP=$(ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+# Authorize the IP
+xhost + $IP
+```
+
+### 3. Environment Configuration
+Update your local `.env` file (copied from `.env.example`):
+* **UID/GID:** Typically `501` on macOS. Run `id -u` to verify.
+* **DISPLAY:** You may need to update the `DISPLAY` environment variable in your `launch.json` or `docker-compose.yml` to:
+  `DISPLAY=host.docker.internal:0`
+
+### 4. Known Troubleshooting Points
+* **No Window Appears:** Ensure XQuartz is running in the background before launching the debugger.
+* **Apple Silicon (M1/M2/M3):** Your `Dockerfile` will build an **ARM64** image. While faster, ensure you are not forcing an `x86_64` platform in your Compose file if you encounter unexpected library errors.
+* **GDB Support:** Ensure the `pipeTransport` in `launch.json` points to the correct `gdb` path installed via the `Dockerfile`.
