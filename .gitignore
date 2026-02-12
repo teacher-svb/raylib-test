@@ -1,0 +1,20 @@
+# Root Environment
+.env
+.vscode/
+
+# Build artifacts
+project/build/
+project/external/raylib/build/
+
+# Raylib "Clutter" (Metadata, Logos, and IDE Projects)
+project/external/raylib/.github/
+project/external/raylib/logo/
+project/external/raylib/projects/
+project/external/raylib/tools/
+project/external/raylib/examples/
+
+# Generic Binary ignores
+*.so
+*.so.*
+*.a
+*.o

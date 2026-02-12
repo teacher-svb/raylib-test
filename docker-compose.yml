@@ -1,0 +1,37 @@
+services:
+  raylib-app:
+    build: .  # Points to the Dockerfile in the same folder
+    image: raylib-dev
+    container_name: raylib_developer
+    # Matches your host user so you own the files and have socket permissions
+    user: "${UID}:${GID}"
+    
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XDG_RUNTIME_DIR=/tmp
+      # Ensures the app looks for the D-Bus socket where we mounted it
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${UID}/bus
+      # Optional: Force X11 if you still have Wayland detection issues
+      - WAYLAND_DISPLAY= 
+
+    volumes:
+      # Current directory to /workspace
+      - ./project:/workspace
+      # Graphics Sockets
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      # D-Bus socket for KDE/Wayland stability
+      - /run/user/${UID}/bus:/run/user/${UID}/bus
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+      
+    devices:
+      - /dev/dri:/dev/dri
+      
+    # Security/Performance settings
+    ipc: host
+    network_mode: host
+    
+    working_dir: /workspace
+    stdin_open: true # Equivalent to -i
+    tty: true        # Equivalent to -t
+    command: /bin/bash
