@@ -1,6 +1,5 @@
 # Root Environment
 .env
-.vscode/
 
 # Build artifacts
 project/build/

@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "XHost: Enable Docker Display",
+            "type": "shell",
+            "command": "xhost +local:docker",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Build Project",
+            "type": "shell",
+            "command": "docker compose run --rm raylib-app sh -c 'mkdir -p build && cd build && cmake .. -DPLATFORM=Desktop && make -j$(nproc)'",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Prepare and Build",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XHost: Enable Docker Display",
+                "Docker: Build Project"
+            ],
+            "group": { "kind": "build", "isDefault": true }
+        }
+    ]
+}

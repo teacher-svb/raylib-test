@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Docker: Build & Run",
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": "Prepare and Build", // Points to the sequence task
+            "runtimeExecutable": "docker",
+            "runtimeArgs": [
+                "compose",
+                "run",
+                "--rm",
+                "raylib-app",
+                "sh",
+                "-c",
+                "unset WAYLAND_DISPLAY && ./build/my_raylib_app"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}
