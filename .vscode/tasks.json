@@ -11,7 +11,9 @@
             "label": "Docker: Build Project",
             "type": "shell",
             "command": "docker compose run --rm raylib-app sh -c 'mkdir -p build && cd build && cmake .. -DPLATFORM=Desktop && make -j$(nproc)'",
-            "problemMatcher": ["$gcc"]
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
             "label": "Prepare and Build",
@@ -20,7 +22,17 @@
                 "XHost: Enable Docker Display",
                 "Docker: Build Project"
             ],
-            "group": { "kind": "build", "isDefault": true }
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Docker: Valgrind Leak Check",
+            "type": "shell",
+            "command": "docker compose run --rm raylib-app sh -c 'cd build && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./TnT_Framework'",
+            "problemMatcher": [],
+            "group": "test"
         }
     ]
 }

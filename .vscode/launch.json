@@ -1,22 +1,76 @@
+// {
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "name": "Docker: Build & Run",
+//             "type": "node",
+//             "request": "launch",
+//             "preLaunchTask": "Prepare and Build", // Points to the sequence task
+//             "runtimeExecutable": "docker",
+//             "runtimeArgs": [
+//                 "compose",
+//                 "run",
+//                 "--rm",
+//                 "raylib-app",
+//                 "sh",
+//                 "-c",
+//                 "unset WAYLAND_DISPLAY && ./build/my_raylib_app"
+//             ],
+//             "console": "integratedTerminal"
+//         }
+//     ]
+// }
 {
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Docker: Build & Run",
-            "type": "node",
+            "name": "Docker: Debug Game",
+            "type": "cppdbg",
             "request": "launch",
-            "preLaunchTask": "Prepare and Build", // Points to the sequence task
-            "runtimeExecutable": "docker",
-            "runtimeArgs": [
-                "compose",
-                "run",
-                "--rm",
-                "raylib-app",
-                "sh",
-                "-c",
-                "unset WAYLAND_DISPLAY && ./build/my_raylib_app"
+            "preLaunchTask": "Prepare and Build",
+            "program": "/workspace/build/my_raylib_app", // Path inside the container
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "/workspace",
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": "${env:DISPLAY}"
+                },
+                {
+                    "name": "WAYLAND_DISPLAY",
+                    "value": "${env:WAYLAND_DISPLAY}"
+                }
             ],
-            "console": "integratedTerminal"
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "pipeTransport": {
+                "pipeCwd": "${workspaceFolder}",
+                "pipeProgram": "docker",
+                "pipeArgs": [
+                    "compose",
+                    "run",
+                    "--rm",
+                    "-i",
+                    "raylib-app",
+                    "sh",
+                    "-c"
+                ],
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeEnv": {
+                    "PATH": "/usr/bin:/usr/local/bin:${env:PATH}"
+                }
+            },
+            "sourceFileMap": {
+                "/workspace": "${workspaceFolder}/project"
+            }
         }
     ]
 }

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(my_raylib_app)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Debug)
 
 # Point to your vendored raylib
 add_subdirectory(external/raylib)

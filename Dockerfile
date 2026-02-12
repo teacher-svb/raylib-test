@@ -5,6 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 1. Initial update and install of base dependencies + kitware repo requirements
 RUN apt-get update && apt-get install -y \
+    gdb gdbserver \
+    valgrind \
     ca-certificates \
     gpg \
     wget \
